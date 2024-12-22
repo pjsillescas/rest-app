@@ -1,0 +1,11 @@
+{
+	"name": "pedro/rest-app",
+	"description": "A simple rest app with backend php + mysql and frontend react.",
+	"type": "project",
+	"minimum-stability": "dev",
+    "require": {
+		"slim/psr7": "dev-master",
+        "slim/slim": "^4.0",
+        "monolog/monolog": "^2.0"
+    }
+}
