@@ -8,13 +8,23 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Factory\AppFactory;
 
 
+$corsMiddleware = function (Request $request, RequestHandler $handler)
+{
+	// Proceed with the next middleware
+	$response = $handler->handle($request);
+
+	$response = $response->withHeader("Access-Control-Allow-Origin", "*");
+
+	return $response;
+};
+
 $jsonMiddleware = function (Request $request, RequestHandler $handler)
 {
 	// Proceed with the next middleware
 	$response = $handler->handle($request);
 
 	// Modify the response after the application has processed the request
-	$response = $response->withHeader('Content-Type', 'application/json');
+	$response = $response->withHeader("Content-Type", "application/json");
 
 	return $response;
 };
@@ -22,6 +32,7 @@ $jsonMiddleware = function (Request $request, RequestHandler $handler)
 
 $app = AppFactory::create();
 $app->add($jsonMiddleware);
+$app->add($corsMiddleware);
 
 /**
  * The routing middleware should be added earlier than the ErrorMiddleware
