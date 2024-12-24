@@ -23,10 +23,6 @@ COPY . .
 # Set permissions for the PHP application
 RUN chown -R www-data:www-data /var/www/html
 
-# Run Composer to install dependencies
-#RUN composer install
-#CMD bash -c "composer install"
-
 # Install NGINX
 RUN apt-get update && apt-get install -y nginx && apt-get clean
 
