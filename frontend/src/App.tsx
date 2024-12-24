@@ -4,19 +4,11 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Product } from './ProductApi';
 import ProductApi from './ProductApi';
 import ProductComp from './ProductComp';
+import ActionForm from './ActionForm';
 
-type ActionType = "ADD" | "UPDATE" | "GET" | undefined;
-
-function App() {
+export default function App() {
 	const [products, setProducts] = useState<Product[]>([]);
 	const [lastProduct, setLastProduct] = useState<Product | undefined>(undefined);
-
-	const [action, setAction] = useState<ActionType>(undefined);
-	
-	const [id, setId] = useState<number>(0);
-	const [name, setName] = useState<string>("");
-
-	console.log(`(${id}, ${name})`);
 
 	const loadProducts = () => ProductApi.getAllProducts((aProducts: Product[]) => setProducts(aProducts));
 
@@ -24,46 +16,36 @@ function App() {
 		loadProducts();
 	}, []);
 
-	const addProductClick = useCallback(() => {
+	const addCallback = useCallback((name: string) => {
 		ProductApi.addProduct(name??"", (product: Product) => {
 			setLastProduct(product);
 			loadProducts();
 		});
-	}, []);
+	}, [setLastProduct]);
 	
-	const updateProductClick = useCallback(() => {
-		ProductApi.addProduct(name, (product: Product) => {
+	const updateCallback = useCallback((id: number, name: string) => {
+		console.log(`update product '${id}' '${name}'`);
+		ProductApi.updateProduct(id, name, (product: Product) => {
 			setLastProduct(product);
 			loadProducts();
 		});
-	}, []);
+	}, [setLastProduct]);
 	
-	const getProductClick = useCallback(() => {
-		console.log("getting product " + id);
+	const getCallback = useCallback((id: number) => {
 		ProductApi.getProduct(id, (product: Product) => {
 			setLastProduct(product);
 		});
-	}, []);
+	}, [setLastProduct]);
 
 	return (
 		<div className="App">
-			<div className="buttons">
-				<button className="button" onClick={addProductClick}>Add</button>
-				<button className="button" onClick={updateProductClick}>Update</button>
-				<button className="button" onClick={getProductClick}>Get</button>
-			</div>
-			<form>
-				<label>Id</label> <input name="id" onChange={(e: any) => setId(parseInt(e.target.value))} />
-				<label>Name</label> <input name="id" onChange={(e: any) => setName(e.target.value)} />
-			</form>
+			<ActionForm getCallback={getCallback} updateCallback={updateCallback} addCallback={addCallback} />
 			<div className="products">
 				{products.map(product => <ProductComp product={product}/>)}
 			</div>
-			{!!lastProduct && <div className="lastProduct">
+			{!!lastProduct && <div className="last-product">
 				<ProductComp product={lastProduct}/>
 			</div>}
 		</div>
 	);
 }
-
-export default App;
