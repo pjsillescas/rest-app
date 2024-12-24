@@ -13,7 +13,8 @@ $corsMiddleware = function (Request $request, RequestHandler $handler)
 	// Proceed with the next middleware
 	$response = $handler->handle($request);
 
-	$response = $response->withHeader("Access-Control-Allow-Origin", "*");
+	$response = $response->withHeader("Access-Control-Allow-Origin", "*")
+		->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
 
 	return $response;
 };
@@ -90,6 +91,18 @@ $app->put("/products", function (Request $request, Response $response, array $ar
 	$name = $requestData["name"];
 	$data = api\API::getInstance()->updateProduct($id, $name);
 	$response->getBody()->write(json_encode($data));
+	return $response;
+});
+
+// preflight request
+$app->options("/products", function(Request $request, Response $response, array $args)
+{
+	$response = $response
+		->withHeader("Connection", "keep-alive")
+		->withHeader("Access-Control-Allow-Origin", "*")
+		->withHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE")
+		->withHeader("Access-Control-Allow-Headers", "X-Requested-With")
+		->withHeader("Access-Control-Max-Age", "86400");
 	return $response;
 });
 
